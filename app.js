@@ -12,26 +12,43 @@ const NODE_ENV = require('./config/env').NODE_ENV;
 
 const indexRoutes = require('./routes/index.routes');
 
-const prodOrigins = [BASE_URL];
-const devOrigin = DEV_URL;
-const allowedOrigins = NODE_ENV === 'production' ? prodOrigins : devOrigin;
+// const prodOrigins = [BASE_URL];
+// const devOrigin = DEV_URL;
+// const allowedOrigins = NODE_ENV === 'production' ? prodOrigins : devOrigin;
 
-const corsOptions = {
-    origin: (origin, cb) => {
-        if (allowedOrigins.includes(origin)) {
-            console.log(origin, allowedOrigins);
-            cb(null, true);
-        } else {
-            cb(new Error('Not allowed by CORS'));
-        }
-    },
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
-};
+// const corsOptions = {
+//     origin: (origin, cb) => {
+//         if (allowedOrigins.includes(origin)) {
+//             console.log(origin, allowedOrigins);
+//             cb(null, true);
+//         } else {
+//             cb(new Error('Not allowed by CORS'));
+//         }
+//     },
+//     credentials: true,
+//     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+// };
 
 connectDb();
+if (NODE_ENV === 'development') {
+    app.use(
+        cors({
+            origin: DEV_URL,
+            credentials: true,
+        })
+    );
+}
 
-app.use(cors(corsOptions));
+if (NODE_ENV === 'production') {
+    app.use(
+        cors({
+            origin: BASE_URL,
+            credentials: true,
+        })
+    );
+}
+// app.use(cors(corsOptions));
+
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(cookieParser());
