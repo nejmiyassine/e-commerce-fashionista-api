@@ -12,8 +12,11 @@ const { signToken } = require('../helpers/jwt');
 const accessTokenCookieOptions = {
     expires: new Date(Date.now() * 86400 * 1000),
     maxAge: 86400 * 1000,
+    // httpOnly: true,
+    // sameSite: 'lax',
     httpOnly: true,
-    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production', // Ensure cookies are only sent over HTTPS in production
+    sameSite: 'None',
 };
 
 if (process.env.NODE_ENV === 'production')

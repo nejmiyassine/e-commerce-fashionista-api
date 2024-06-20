@@ -5,64 +5,16 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser');
 
 const connectDb = require('./config/database');
-const PORT = require('./config/env').PORT;
-const BASE_URL = require('./config/env').BASE_URL;
-const DEV_URL = require('./config/env').DEV_URL;
-const NODE_ENV = require('./config/env').NODE_ENV;
+const { PORT, BASE_URL, DEV_URL, NODE_ENV } = require('./config/env');
 
 const indexRoutes = require('./routes/index.routes');
 
 connectDb();
 
-if (NODE_ENV === 'development') {
-    app.use(
-        cors({
-            origin: DEV_URL,
-            credentials: true,
-        })
-    );
-}
-
-if (NODE_ENV === 'production') {
-    app.use(
-        cors({
-            origin: BASE_URL,
-            credentials: true,
-        })
-    );
-}
-
-if (process.env.NODE_ENV === 'development') {
-    res.cookie('token', token, {
-        // can only be accessed by server requests
-        httpOnly: true,
-        // path = where the cookie is valid
-        path: '/',
-        // domain = what domain the cookie is valid on
-        domain: 'localhost',
-        // secure = only send cookie over https
-        secure: false,
-        // sameSite = only send cookie if the request is coming from the same origin
-        sameSite: 'lax', // "strict" | "lax" | "none" (secure must be true)
-        // maxAge = how long the cookie is valid for in milliseconds
-        maxAge: 3600000 * 24, // 24 hour
-    });
-}
-
-if (process.env.NODE_ENV === 'production') {
-    res.cookie('token', token, {
-        // can only be accessed by server requests
-        httpOnly: true,
-        // path = where the cookie is valid
-        path: '/',
-        // secure = only send cookie over https
-        secure: true,
-        // sameSite = only send cookie if the request is coming from the same origin
-        sameSite: 'none', // "strict" | "lax" | "none" (secure must be true)
-        // maxAge = how long the cookie is valid for in milliseconds
-        maxAge: 3600000 * 24, // 24 hour
-    });
-}
+const corsOptions = {
+    origin: NODE_ENV === 'development' ? DEV_URL : BASE_URL,
+    credentials: true,
+};
 
 app.use(cors(corsOptions));
 
