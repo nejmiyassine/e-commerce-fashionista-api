@@ -12,24 +12,8 @@ const NODE_ENV = require('./config/env').NODE_ENV;
 
 const indexRoutes = require('./routes/index.routes');
 
-// const prodOrigins = [BASE_URL];
-// const devOrigin = DEV_URL;
-// const allowedOrigins = NODE_ENV === 'production' ? prodOrigins : devOrigin;
-
-// const corsOptions = {
-//     origin: (origin, cb) => {
-//         if (allowedOrigins.includes(origin)) {
-//             console.log(origin, allowedOrigins);
-//             cb(null, true);
-//         } else {
-//             cb(new Error('Not allowed by CORS'));
-//         }
-//     },
-//     credentials: true,
-//     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
-// };
-
 connectDb();
+
 if (NODE_ENV === 'development') {
     app.use(
         cors({
@@ -47,7 +31,40 @@ if (NODE_ENV === 'production') {
         })
     );
 }
-// app.use(cors(corsOptions));
+
+if (process.env.NODE_ENV === 'development') {
+    res.cookie('token', token, {
+        // can only be accessed by server requests
+        httpOnly: true,
+        // path = where the cookie is valid
+        path: '/',
+        // domain = what domain the cookie is valid on
+        domain: 'localhost',
+        // secure = only send cookie over https
+        secure: false,
+        // sameSite = only send cookie if the request is coming from the same origin
+        sameSite: 'lax', // "strict" | "lax" | "none" (secure must be true)
+        // maxAge = how long the cookie is valid for in milliseconds
+        maxAge: 3600000 * 24, // 24 hour
+    });
+}
+
+if (process.env.NODE_ENV === 'production') {
+    res.cookie('token', token, {
+        // can only be accessed by server requests
+        httpOnly: true,
+        // path = where the cookie is valid
+        path: '/',
+        // secure = only send cookie over https
+        secure: true,
+        // sameSite = only send cookie if the request is coming from the same origin
+        sameSite: 'none', // "strict" | "lax" | "none" (secure must be true)
+        // maxAge = how long the cookie is valid for in milliseconds
+        maxAge: 3600000 * 24, // 24 hour
+    });
+}
+
+app.use(cors(corsOptions));
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
