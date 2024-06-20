@@ -7,13 +7,14 @@ const cookieParser = require('cookie-parser');
 const connectDb = require('./config/database');
 const PORT = require('./config/env').PORT;
 const BASE_URL = require('./config/env').BASE_URL;
+const DEV_URL = require('./config/env').DEV_URL;
+const NODE_ENV = require('./config/env').NODE_ENV;
 
 const indexRoutes = require('./routes/index.routes');
 
 const prodOrigins = [BASE_URL];
-const devOrigin = 'http://localhost:5173';
-const allowedOrigins =
-    process.env.NODE_ENV === 'production' ? prodOrigins : devOrigin;
+const devOrigin = DEV_URL;
+const allowedOrigins = NODE_ENV === 'production' ? prodOrigins : devOrigin;
 
 const corsOptions = {
     origin: (origin, cb) => {
